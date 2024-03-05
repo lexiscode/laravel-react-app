@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axiosClient from "../axios-client.js";
 import { Link } from "react-router-dom";
-import { useStateContext } from "../contexts/ContextProvider.jsx";
+import { useStateContext } from "../context/ContextProvider.jsx";
 
 export default function Users() {
     const [users, setUsers] = useState([]);
@@ -18,26 +18,34 @@ export default function Users() {
         }
         axiosClient.delete(`/users/${user.id}`)
             .then(() => {
-            setNotification("User was successfully deleted");
-            getUsers();
+                setNotification("User was successfully deleted");
+                getUsers();
         });
     };
 
     const getUsers = () => {
-        setLoading(true)
-        axiosClient.get("/users").then(({ data }) => {
-            setLoading(false)
-            // console.log(data)
-            setUsers(data.data)
-        })
-        .catch(() => {
-            setLoading(false)
-        })
+        setLoading(true);
+        
+        axiosClient.get("/users")
+            .then(({ data }) => {
+                setLoading(false);
+                // console.log(data)
+                setUsers(data.data);
+            })
+            .catch(() => {
+                setLoading(false);
+            });
     };
 
     return (
         <div>
-            <div style={{display: "flex",justifyContent: "space-between",alignItems: "center",}}>
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                }}
+            >
                 <h1>Users</h1>
                 <Link className="btn-add" to="/users/new">
                     Add new
@@ -72,11 +80,17 @@ export default function Users() {
                                     <td>{u.email}</td>
                                     <td>{u.created_at}</td>
                                     <td>
-                                        <Link className="btn-edit" to={"/users/" + u.id}>
+                                        <Link
+                                            className="btn-edit"
+                                            to={"/users/" + u.id}
+                                        >
                                             Edit
                                         </Link>
                                         &nbsp;
-                                        <button className="btn-delete" onClick={(e) => onDeleteClick(u)} >
+                                        <button
+                                            className="btn-delete"
+                                            onClick={(e) => onDeleteClick(u)}
+                                        >
                                             Delete
                                         </button>
                                     </td>

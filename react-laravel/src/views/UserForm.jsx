@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axiosClient from "../axios-client.js";
-import { useStateContext } from "../contexts/ContextProvider.jsx";
+import { useStateContext } from "../context/ContextProvider.jsx";
 
 export default function UserForm() {
     const navigate = useNavigate();
@@ -39,7 +39,7 @@ export default function UserForm() {
             axiosClient.put(`/users/${user.id}`, user)
                 .then(() => {
                     setNotification("User was successfully updated");
-                    navigate("/users");
+                    navigate("/users"); //redirect
                 })
                 .catch((err) => {
                     const response = err.response;
@@ -68,7 +68,6 @@ export default function UserForm() {
             {user.id && <h1>Update User: {user.name}</h1>}
             {!user.id && <h1>New User</h1>}
             <div className="card animated fadeInDown">
-
                 {loading && <div className="text-center">Loading...</div>}
 
                 {errors && (
@@ -81,10 +80,39 @@ export default function UserForm() {
 
                 {!loading && (
                     <form onSubmit={onSubmit}>
-                        <input type="text" value={user.name} onChange={(ev) => setUser({ ...user, name: ev.target.value })} placeholder="Name" />
-                        <input type="email" value={user.email} onChange={(ev) => setUser({ ...user, email: ev.target.value })} placeholder="Email" />
-                        <input type="password" onChange={(ev) => setUser({ ...user, password: ev.target.value })} placeholder="Password" />
-                        <input type="password" onChange={(ev) => setUser({ ...user, password_confirmation: ev.target.value })} placeholder="Password Confirmation" />
+                        <input
+                            type="text"
+                            value={user.name}
+                            onChange={(ev) =>
+                                setUser({ ...user, name: ev.target.value })
+                            }
+                            placeholder="Name"
+                        />
+                        <input
+                            type="email"
+                            value={user.email}
+                            onChange={(ev) =>
+                                setUser({ ...user, email: ev.target.value })
+                            }
+                            placeholder="Email"
+                        />
+                        <input
+                            type="password"
+                            onChange={(ev) =>
+                                setUser({ ...user, password: ev.target.value })
+                            }
+                            placeholder="Password"
+                        />
+                        <input
+                            type="password"
+                            onChange={(ev) =>
+                                setUser({
+                                    ...user,
+                                    password_confirmation: ev.target.value,
+                                })
+                            }
+                            placeholder="Password Confirmation"
+                        />
 
                         <button className="btn">Save</button>
                     </form>
@@ -93,4 +121,3 @@ export default function UserForm() {
         </>
     );
 }
-

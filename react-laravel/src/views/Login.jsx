@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import axiosClient from "../axios-client.js";
 import { createRef } from "react";
-import { useStateContext } from "../contexts/ContextProvider.jsx";
+import { useStateContext } from "../context/ContextProvider.jsx";
 import { useState } from "react";
 
 export default function Login() {
@@ -17,7 +17,9 @@ export default function Login() {
             email: emailRef.current.value,
             password: passwordRef.current.value,
         };
+
         setErrors(null);
+
         axiosClient.post("/login", payload)
             .then(({ data }) => {
                 setUser(data.user);
@@ -28,10 +30,10 @@ export default function Login() {
                 if (response && response.status === 422) {
                     if (response.data.errors) {
                         setErrors(response.data.errors);
-                    }else{
+                    } else {
                         setErrors({
-                            email: [response.data.message]
-                        })
+                            email: [response.data.message],
+                        });
                     }
                 }
             });
@@ -41,13 +43,13 @@ export default function Login() {
         <form onSubmit={onSubmit}>
             <h1 className="title">Login</h1>
 
-            {
-                errors && <div className="alert">
+            {errors && (
+                <div className="alert">
                     {Object.keys(errors).map((key) => (
                         <p key={key}>{errors[key][0]}</p>
                     ))}
                 </div>
-            }
+            )}
 
             <input ref={emailRef} type="email" placeholder="Email" />
             <input ref={passwordRef} type="password" placeholder="Password" />
