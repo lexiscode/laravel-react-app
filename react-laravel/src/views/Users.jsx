@@ -11,9 +11,13 @@ export default function Users() {
     // State variable to store the search query
     const [searchQuery, setSearchQuery] = useState("");
 
+    // State variables to keep track of current page and total no. of pages returned by the API
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+
     useEffect(() => {
         getUsers();
-    }, []);
+    }, [currentPage]);
 
     const onDeleteClick = (user) => {
         if (!window.confirm("Are you sure you want to delete this user?")) {
@@ -28,13 +32,13 @@ export default function Users() {
 
     const getUsers = () => {
         setLoading(true);
-
         axiosClient
-            .get("/users")
+            .get(`/users?page=${currentPage}&search=${searchQuery}`)
             .then(({ data }) => {
                 setLoading(false);
                 // console.log(data)
                 setUsers(data.data);
+                setTotalPages(data.meta.last_page); // this sets the total no. of pages
             })
             .catch(() => {
                 setLoading(false);
@@ -52,6 +56,11 @@ export default function Users() {
             user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             user.email.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+    // Updates the currentPage state when the user clicks on a pagination button
+    const handlePagination = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
 
     return (
         <div>
@@ -79,6 +88,7 @@ export default function Users() {
 
             <div className="card animated fadeInDown">
                 <table>
+                    {/* Table Header */}
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -88,7 +98,7 @@ export default function Users() {
                             <th>Actions</th>
                         </tr>
                     </thead>
-
+                    {/* Table Body */}
                     <tbody>
                         {/* This displays the "loading" animation */}
                         {loading && (
@@ -135,6 +145,22 @@ export default function Users() {
                     </tbody>
                 </table>
             </div>
+            {/* Pagination Links */}
+            {totalPages > 1 && (
+                <div className="pagination">
+                    {Array.from({ length: totalPages }, (_, index) => (
+                        <button
+                            key={index}
+                            className={
+                                currentPage === index + 1 ? "active" : ""
+                            }
+                            onClick={() => handlePagination(index + 1)}
+                        >
+                            {index + 1}
+                        </button>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
