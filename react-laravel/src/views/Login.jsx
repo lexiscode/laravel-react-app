@@ -12,12 +12,16 @@ export default function Login() {
     const { setUser, setToken } = useStateContext();
     const [errors, setErrors] = useState(null);
 
+    // create a state variable to track whether the login process is in progress
     const [loading, setLoading] = useState(false);
+    // create a state variable to disable login button
+    const [buttonDisabled, setButtonDisabled] = useState(false);
 
     const onSubmit = (e) => {
         e.preventDefault();
 
         setLoading(true); // Set loading state to true
+        setButtonDisabled(true); // Disable login button
 
         const payload = {
             email: emailRef.current.value,
@@ -47,6 +51,7 @@ export default function Login() {
 
             .finally(() => {
                 setLoading(false); // Set loading state to false after request completes
+                setButtonDisabled(false); // Enable login button after request completes
             });
     };
 
@@ -64,14 +69,23 @@ export default function Login() {
 
             <input ref={emailRef} type="email" placeholder="Email" />
             <input ref={passwordRef} type="password" placeholder="Password" />
-            <button className="btn btn-block">Login</button>
+            <button
+                className={`btn btn-block ${buttonDisabled ? "disabled" : ""}`}
+                disabled={buttonDisabled}
+            >
+                {loading ? (
+                    <div className="loader"></div> // Loader animation
+                ) : (
+                    "Login"
+                )}
+            </button>
             <p className="message">
                 Not registered? <Link to="/signup">Create an account</Link>
             </p>
 
             <LoadingBar // Render the loading bar
                 show={loading}
-                color="#f11946"
+                color="blue"
                 waitingTime={500} // Optional: Specify a waiting time before displaying the progress bar
             />
         </form>
