@@ -3,6 +3,8 @@ import axiosClient from "../axios-client.js";
 import { createRef } from "react";
 import { useStateContext } from "../context/ContextProvider.jsx";
 import { useState } from "react";
+import LoadingBar from "react-loading-bar";
+import "react-loading-bar/dist/index.css";
 
 export default function Login() {
     const emailRef = createRef();
@@ -10,8 +12,12 @@ export default function Login() {
     const { setUser, setToken } = useStateContext();
     const [errors, setErrors] = useState(null);
 
+    const [loading, setLoading] = useState(false);
+
     const onSubmit = (e) => {
         e.preventDefault();
+
+        setLoading(true); // Set loading state to true
 
         const payload = {
             email: emailRef.current.value,
@@ -20,7 +26,8 @@ export default function Login() {
 
         setErrors(null);
 
-        axiosClient.post("/login", payload)
+        axiosClient
+            .post("/login", payload)
             .then(({ data }) => {
                 setUser(data.user);
                 setToken(data.token);
@@ -36,6 +43,10 @@ export default function Login() {
                         });
                     }
                 }
+            })
+
+            .finally(() => {
+                setLoading(false); // Set loading state to false after request completes
             });
     };
 
@@ -57,6 +68,12 @@ export default function Login() {
             <p className="message">
                 Not registered? <Link to="/signup">Create an account</Link>
             </p>
+
+            <LoadingBar // Render the loading bar
+                show={loading}
+                color="#f11946"
+                waitingTime={500} // Optional: Specify a waiting time before displaying the progress bar
+            />
         </form>
     );
 }
