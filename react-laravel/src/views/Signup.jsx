@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom";
 import { useRef, useState } from "react"
 import axiosClient from "../axios-client.js"
 import { useStateContext } from "../context/ContextProvider.jsx"
@@ -11,6 +11,8 @@ export default function Signup() {
     const [errors, setErrors] = useState(null);
     const { setUser, setToken } = useStateContext();
 
+    const navigate = useNavigate(); // its usage is commented in the onSubmit function
+
     const onSubmit = (e) => {
         e.preventDefault();
         const payload = {
@@ -22,8 +24,9 @@ export default function Signup() {
         // console.log(payload);
         axiosClient.post("/signup", payload)
             .then(({ data }) => {
-                setUser(data.user);
-                setToken(data.token);
+                setUser(data.user); // setUser(null); if you don't want autologin
+                setToken(data.token); // setToken(null); if you don't want autologin
+                // navigate("/login"); //redirect to login page, if you don't want autologin
             })
             .catch((err) => {
                 const response = err.response;

@@ -4,8 +4,10 @@ import axiosClient from "../axios-client.js";
 import { useStateContext } from "../context/ContextProvider.jsx";
 
 export default function UserForm() {
+    
     const navigate = useNavigate();
     let { id } = useParams();
+
     const [user, setUser] = useState({
         id: null,
         name: "",
@@ -13,6 +15,7 @@ export default function UserForm() {
         password: "",
         password_confirmation: "",
     });
+
     const [errors, setErrors] = useState(null);
     const [loading, setLoading] = useState(false);
     const { setNotification } = useStateContext();

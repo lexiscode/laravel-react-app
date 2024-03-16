@@ -19,13 +19,14 @@ export default function Users() {
         axiosClient.delete(`/users/${user.id}`)
             .then(() => {
                 setNotification("User was successfully deleted");
+                // Redirect to /users route after successful deletion
                 getUsers();
-        });
+            });
     };
 
     const getUsers = () => {
         setLoading(true);
-        
+
         axiosClient.get("/users")
             .then(({ data }) => {
                 setLoading(false);
@@ -89,7 +90,7 @@ export default function Users() {
                                         &nbsp;
                                         <button
                                             className="btn-delete"
-                                            onClick={(e) => onDeleteClick(u)}
+                                            onClick={() => onDeleteClick(u)}
                                         >
                                             Delete
                                         </button>
