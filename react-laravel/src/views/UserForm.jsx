@@ -114,7 +114,7 @@ export default function UserForm() {
                             placeholder="Password Confirmation"
                         />
 
-                        <button className="btn">Save</button>
+                        <button type="submit" className="btn">Save</button>
                     </form>
                 )}
             </div>
