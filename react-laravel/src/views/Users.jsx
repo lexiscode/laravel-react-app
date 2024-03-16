@@ -8,6 +8,9 @@ export default function Users() {
     const [loading, setLoading] = useState(false);
     const { setNotification } = useStateContext();
 
+    // State variable to store the search query
+    const [searchQuery, setSearchQuery] = useState("");
+
     useEffect(() => {
         getUsers();
     }, []);
@@ -16,18 +19,18 @@ export default function Users() {
         if (!window.confirm("Are you sure you want to delete this user?")) {
             return;
         }
-        axiosClient.delete(`/users/${user.id}`)
-            .then(() => {
-                setNotification("User was successfully deleted");
-                // Redirect to /users route after successful deletion
-                getUsers();
-            });
+        axiosClient.delete(`/users/${user.id}`).then(() => {
+            setNotification("User was successfully deleted");
+            // Redirect to /users route after successful deletion
+            getUsers();
+        });
     };
 
     const getUsers = () => {
         setLoading(true);
 
-        axiosClient.get("/users")
+        axiosClient
+            .get("/users")
             .then(({ data }) => {
                 setLoading(false);
                 // console.log(data)
@@ -37,6 +40,18 @@ export default function Users() {
                 setLoading(false);
             });
     };
+
+    // Updates the searchQuery state variable whenever the user types in the search input
+    const handleSearch = (e) => {
+        setSearchQuery(e.target.value);
+    };
+
+    // Filter users based on the search query
+    const filteredUsers = users.filter(
+        (user) =>
+            user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            user.email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <div>
@@ -52,6 +67,16 @@ export default function Users() {
                     Add new
                 </Link>
             </div>
+
+            <div>
+                <input
+                    type="text"
+                    placeholder="Search by name or email"
+                    value={searchQuery}
+                    onChange={handleSearch}
+                />
+            </div>
+
             <div className="card animated fadeInDown">
                 <table>
                     <thead>
@@ -63,42 +88,51 @@ export default function Users() {
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    {loading && (
-                        <tbody>
+
+                    <tbody>
+                        {/* This displays the "loading" animation */}
+                        {loading && (
                             <tr>
                                 <td colSpan="5" className="text-center">
                                     Loading...
                                 </td>
                             </tr>
-                        </tbody>
-                    )}
-                    {!loading && (
-                        <tbody>
-                            {users.map((u) => (
-                                <tr key={u.id}>
-                                    <td>{u.id}</td>
-                                    <td>{u.name}</td>
-                                    <td>{u.email}</td>
-                                    <td>{u.created_at}</td>
+                        )}
+                        {/* This checks if the loading has stopped and if there's no data retrieved */}
+                        {!loading && filteredUsers.length === 0 && (
+                            <tr>
+                                <td colSpan="5" className="text-center">
+                                    No users found.
+                                </td>
+                            </tr>
+                        )}
+                        {/* This checks if the loading has stopped and if there are data retrieved */}
+                        {!loading &&
+                            filteredUsers.length > 0 &&
+                            filteredUsers.map((user) => (
+                                <tr key={user.id}>
+                                    <td>{user.id}</td>
+                                    <td>{user.name}</td>
+                                    <td>{user.email}</td>
+                                    <td>{user.created_at}</td>
                                     <td>
                                         <Link
                                             className="btn-edit"
-                                            to={"/users/" + u.id}
+                                            to={"/users/" + user.id}
                                         >
                                             Edit
                                         </Link>
                                         &nbsp;
                                         <button
                                             className="btn-delete"
-                                            onClick={() => onDeleteClick(u)}
+                                            onClick={() => onDeleteClick(user)}
                                         >
                                             Delete
                                         </button>
                                     </td>
                                 </tr>
                             ))}
-                        </tbody>
-                    )}
+                    </tbody>
                 </table>
             </div>
         </div>
